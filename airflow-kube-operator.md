@@ -47,6 +47,13 @@ configurations and dependencies** For operators that are run within static
 airflow workers, dependency management can become quite difficult. If I want to
 run one task that requires scipy, and another that requires numpy, I have to
 either maintain both dependencies within my airflow worker, or somehow configure
+* **Usage of kubernetes secrets for added security** Handling sensitive data is
+a core responsibility of any devops engineer. At every opportunity, we want to
+minimize any API keys, database passwords,  or ... to a strict need-to-know
+basis. With the kubernetes operator, we can use the kubernetes Vault technology
+to store all sensitive data. This means that the airflow workers will never have
+access to this information, and can simply request that pods be built with only
+the secrets they need
 
 # Examples
 
@@ -55,17 +62,12 @@ either maintain both dependencies within my airflow worker, or somehow configure
 For this first example, let's create a basic docker image that runs simple
 python commands. This example will only have two end-results: Succeed or fail.
 
-```python
+```{.python .input  n=1}
 import sys
-
-
-def fail():
-    return 10 / 0
 
 
 def succeed():
     return 10 / 1
-
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
@@ -74,8 +76,6 @@ if __name__ == "__main__":
     arg = sys.argv[1]
     if arg == 'pass':
         succeed()
-    elif arg == 'fail':
-        fail()
     else:
         print('invalid command: {}'.format(arg))
         exit(-1)
@@ -87,7 +87,7 @@ at the moment, we will later see how it can expand to more complex use-cases)
 
 #### Entrypoint.sh
 
-```python
+```{.python .input}
 #!/usr/bin/env bash
 
 python /airflow-example.py
@@ -95,7 +95,7 @@ python /airflow-example.py
 
 #### Docker File
 
-```python
+```{.python .input}
 FROM ubuntu:16.04
 
 # install python dependencies
@@ -125,23 +125,43 @@ ENTRYPOINT ["/entrypoint.sh"]
 Finally, we will create a simple DAG file that runs a passing and failing
 version of our example script. This script can be run on any executor.
 
-```python
+```{.python .input}
 # Airflow DAG File that creates two kubernetes operators, one that passes and one that fails
+from airflow import DAG
+from airflow.operators import BashOperator
+from datetime import datetime, timedelta
+from airflow.operators.docker_operator import DockerOperator
+
+default_args = {
+    'owner': 'airflow',
+    'depends_on_past': False,
+    'start_date': datetime.utcnow(),
+    'email': ['airflow@example.com'],
+    'email_on_failure': False,
+    'email_on_retry': False,
+    'retries': 1,
+    'retry_delay': timedelta(minutes=5)
+}
+
+dag = DAG(
+    'kubernetes_sample', default_args=default_args, schedule_interval=timedelta(minutes=10))
 
 passing = KubernetesPodOperator(namespace='default',
                           image="airflow-test",
                           arguments=["succeed"],
                           labels={"foo": "bar"},
                           name="passing-test",
-                          task_id="task1"
+                          task_id="task1",
+                          dag=dag
                           )
 
 failing = KubernetesPodOperator(namespace='default',
                           image="airflow-test",
-                          arguments=["succeed"],
+                          arguments=["fail"],
                           labels={"foo": "bar"},
                           name="fail",
-                          task_id="task1"
+                          task_id="task1",
+                          dag=dag
                           )
 
 failing.set_upstream(passing)
@@ -156,14 +176,14 @@ Link to github file
 
 ## Example 2: Running a model using scipy
 
-## Example 3: Running a kubeflow pipeline
+# Architecture
 
-Paragraph about kubeflow and how awesome it will be
+<img src="architecture.png">
 
-* Developed by Google and
-Bloomberg to make kubernetes data development easier
-
-## How it Works
+1. **Requesting The Resource:**
+2. **Launching the
+Pod**
+3. **Monitoring and task reporting**
 
 # Closing Statements
 
