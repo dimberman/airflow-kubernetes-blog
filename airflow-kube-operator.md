@@ -36,8 +36,7 @@ ways to make deployments and ETL pipelines simpler to manage. Any opportunity to
 reduce the number of moving parts in our codebase will always lead to future
 opportunities to break in the future. The following is a list of benefits the
 Kubernetes Operator has in reducing the Airflow Engineer's footprint
-*
-**Increased flexibility for deployments:**  Airflow's plugin API has always
+* **Increased flexibility for deployments:**  Airflow's plugin API has always
 offered a significant boon to engineers wishing to test new functionalities
 within their DAGS. On the downside, whenever a developer wanted to create a new
 operator, they had to develop an entirely new plugin. Now, any task that can be
