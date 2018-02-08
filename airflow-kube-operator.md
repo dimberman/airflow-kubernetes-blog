@@ -133,7 +133,7 @@ This will create two pods on Kubernetes: one that has Python and one that
 doesn't. The Python pod will run the Python request correctly, while the one
 without Python will report a failure to the user.
 
-<img src="files/image.png">
+<img src="image.png">
 
 Link to github file
 
