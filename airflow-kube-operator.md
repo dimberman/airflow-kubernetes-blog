@@ -11,7 +11,7 @@ Over the next few months, we will be offering a series of Kubernetes-based offer
 ## What is Kubernetes?
 
 [Kubernetes](https://kubernetes.io/) is an open-source container deployment engine released by Google. Based on google's own
-[Borg](http://blog.kubernetes.io/2015/04/borg-predecessor-to-kubernetes.html), kubernetes allows for easy deployment of images using a highly flexible API. Using kubernetes you can[deploy spark jobs](https://github.com/apache-spark-on-k8s/spark), launch end-to-end applications, or ... using yaml files, python, golang, or java bindings. The kubernetes API's programatic launching of containers seemed a perfect marriage with Airflow's "code as configuration" philosophy.
+[Borg](http://blog.kubernetes.io/2015/04/borg-predecessor-to-kubernetes.html), kubernetes allows for easy deployment of images using a highly flexible API. Using kubernetes you can [deploy spark jobs](https://github.com/apache-spark-on-k8s/spark), launch end-to-end applications, or ... using yaml files, python, golang, or java bindings. The kubernetes API's programatic launching of containers seemed a perfect marriage with Airflow's "code as configuration" philosophy.
 
 ## The Kubernetes Operator
 
