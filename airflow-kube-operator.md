@@ -101,8 +101,10 @@ There are a multitude on articles on [generating docker files within a Jenkins b
 
 ### 3: Airflow launches task 
 
+Finally: Update your DAGs to reflect the new release version and you should be ready to go!
+
 ```python
-failing = KubernetesPodOperator(namespace='default',
+production_task = KubernetesPodOperator(namespace='default',
                           # image="my-production-job:release-1.0.1", <-- old release
                           image="my-production-job:release-1.0.2",
                           cmds=["python","-c"],
@@ -117,8 +119,4 @@ failing = KubernetesPodOperator(namespace='default',
                           
 # Closing Statements
 
-Final statements about all the possibilities this opens up
-
-* Airflow Kubernetes
-Executor
-* Custom Deployments via python API
+The Kubernetes Operator is by no means the end of Airflows' partnership with the Kubernetes community. There is active development on a [native Kubernetes executor]() that will offer dynamic allocation and customization at the airflow level. We have some exciting projects in the works, and we look forward to seeing what awesome use-cases you are able to create!
