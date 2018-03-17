@@ -35,7 +35,7 @@ The Kubernetes Operator uses the [Kubernetes Python Client](https://github.com/k
 The following DAG is probably the simplest example we could write to show how the kubernetes operator works. This DAG  creates two pods on Kubernetes: a linux distro with python and a base ubuntu without. The Python pod will run the Python request correctly, while the one without Python will report a failure to the user. If the operator is working correctly, the `passing-task` pod should complete while the `failing-task` pod returns a failure to the airflow webserver.
 
 
-```{.python .input}
+```python
 from airflow import DAG
 from datetime import datetime, timedelta
 from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
@@ -101,7 +101,7 @@ There are a multitude on articles on [generating docker files within a Jenkins b
 
 ### 3: Airflow launches task 
 
-```{.python .input}
+```python
 failing = KubernetesPodOperator(namespace='default',
                           # image="my-production-job:release-1.0.1", <-- old release
                           image="my-production-job:release-1.0.2",
@@ -111,7 +111,8 @@ failing = KubernetesPodOperator(namespace='default',
                           task_id="failing-task",
                           get_logs=True,
                           dag=dag
-                          )```
+                          )
+```
                           
                           
 # Closing Statements
