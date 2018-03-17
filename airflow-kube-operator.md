@@ -93,7 +93,7 @@ failing.set_upstream(start)
 While this example only uses basic images, the magic of docker is that this same DAG will work for any image/commandpairing you want. The following is a recommended CI/CD pipeline to run production-ready code on an airflow DAG.
 
 ### 1: PR in github
-Use travis or jenkins to run unit and integration tests. 
+Use travis or jenkins to run unit and integration tests, bribe your favorite team-mate into PRing your code, and merge to the master branch to trigger an automated CI build
 
 ### 2: CI/CD via jenkins -> Docker Image
 
@@ -119,4 +119,4 @@ production_task = KubernetesPodOperator(namespace='default',
                           
 # Closing Statements
 
-The Kubernetes Operator is by no means the end of Airflows' partnership with the Kubernetes community. There is active development on a [native Kubernetes executor]() that will offer dynamic allocation and customization at the airflow level. We have some exciting projects in the works, and we look forward to seeing what awesome use-cases you are able to create!
+The Kubernetes Operator is by no means the end of Airflows' partnership with the Kubernetes community. There is active development on a [native Kubernetes executor](https://github.com/apache/incubator-airflow/pull/2414) that will offer dynamic allocation and customization at the airflow level. We have some exciting projects in the works, and we look forward to seeing what awesome use-cases you are able to create!
