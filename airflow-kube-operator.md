@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Today, we are excited to announce a Kubernetes Operator to increase Apache Airflow's viability as a job orchestration engine using the power of the Kubernetes cloud deployment framework. 
+Today, we are excited to announce the Kubernetes Operator; a new mechanism for launching containers using the Kubernetes cloud deployment framework. 
 
 Since its inception, Airflow's greatest strength has been its flexibility. Airflow offers a wide range of native operators for services ranging from Spark and HBase, to GCP and s3. Airflow also offers easy extensibility through its plugin framework. However, one limitation of the project is that Airflow users are confined to the frameworks and clients that exist on the Airflow worker at the moment of execution. If a user wishes to use a different version of scipy or test a new deep learning framework, they would need to either launch a new airflow cluster or risk conflicting with the dependencies of other users' workflows. 
 
@@ -28,11 +28,12 @@ Handling sensitive data is a core responsibility of any devops engineer. At ever
 
 The Kubernetes Operator uses the [Kubernetes Python Client](https://github.com/kubernetes-client/python) to generate a request that is processed by the APIServer (1). Kubernetes will then launch your pod with whatever specs you've defined (2). Images will be loaded with all the necessary environment variables, secrets and dependencies, enacting a single command. Once the job is launched, the operator only needs to monitor the health of track logs (3). Users will have the choice of gathering logs locally to the scheduler or to any distributed logging service currently in their Kubernetes cluster
 
-# Examples
+# Using the Kubernetes Operator
 
-## Example 1: Running a basic container
+## A Basic Example
 
-In this first example, let's create a basic Docker image that runs simple Python\ commands. This example will only have two end-results: succeed or fail
+The following DAG is probably the simplest example we could write to show how the kubernetes operator works. This DAG  creates two pods on Kubernetes: a linux distro with python and a base ubuntu without. The Python pod will run the Python request correctly, while the one without Python will report a failure to the user. If the operator is working correctly, the `passing-task` pod should complete while the `failing-task` pod returns a failure to the airflow webserver.
+
 
 ```{.python .input}
 from airflow import DAG
@@ -59,7 +60,7 @@ dag = DAG(
 start = DummyOperator(task_id='run_this_first', dag=dag)
 
 passing = KubernetesPodOperator(namespace='default',
-                          image="airflow/ci:latest",
+                          image="python:3.6",
                           cmds=["python","-c"],
                           arguments=["print('hello world')"],
                           labels={"foo": "bar"},
@@ -84,14 +85,35 @@ passing.set_upstream(start)
 failing.set_upstream(start)
 ```
 
-This will create two pods on Kubernetes: one that has Python and one that doesn't. The Python pod will run the Python request correctly, while the one without Python will report a failure to the user.
 
 <img src="image.png">
 
-Link to github file
+## But how does this relate to my workflow?
 
-## Example 2: Running a model using SciPy
+While this example only uses basic images, the magic of docker is that this same DAG will work for any image/commandpairing you want. The following is a recommended CI/CD pipeline to run production-ready code on an airflow DAG.
 
+### 1: PR in github
+Use travis or jenkins to run unit and integration tests. 
+
+### 2: CI/CD via jenkins -> Docker Image
+
+There are a multitude on articles on [generating docker files within a Jenkins build](https://getintodevops.com/blog/building-your-first-docker-image-with-jenkins-2-guide-for-developers). It's a good rule of thumb that you should never use a user-generated docker image in a production build. By reserving release tags to the jenkins user, you can ensure that malicious or untested code will never be run by your production airflow instances.
+
+### 3: Airflow launches task 
+
+```{.python .input}
+failing = KubernetesPodOperator(namespace='default',
+                          # image="my-production-job:release-1.0.1", <-- old release
+                          image="my-production-job:release-1.0.2",
+                          cmds=["python","-c"],
+                          arguments=["print('hello world')"],
+                          name="fail",
+                          task_id="failing-task",
+                          get_logs=True,
+                          dag=dag
+                          )```
+                          
+                          
 # Closing Statements
 
 Final statements about all the possibilities this opens up
