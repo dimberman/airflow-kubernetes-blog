@@ -8,6 +8,14 @@ Since its inception, Airflow's greatest strength has been its flexibility. Airfl
 
 To address this issue, we've utilized kubernetes to allow users to launch arbitrary docker containers and configurations. Airflow users can now have full power over their run-time environments, resources, and secrets, basically turning airflow into an "any job you want" scheduler.
 
+## What Is Airflow?
+
+Apache Airflow is one realization of the DevOps philosophy of "Code As Configuration." Airflow allows users to launch multi-step pipelines using a simple python object DAG (Directed Acyclic Graph). You can define dependencies, programatically construct complex workflows, and monitor scheduled jobs in an easy to read UI.
+ 
+ <img src="airflow.png">
+ 
+ Airflow comes with built-in operators for frameworks like Apache Spark, BigQuery, Hive, and EMR. It also offers a Plugins entrypoint that allows DevOps engineers to develop their own connectors.
+ 
 ## What is Kubernetes?
 
 Before we go any further, let's take a moment for a quick overview of Kubernetes. [Kubernetes](https://kubernetes.io/) is an open-source container deployment engine released by Google. Based on Google's [Borg](http://blog.kubernetes.io/2015/04/borg-predecessor-to-kubernetes.html), kubernetes allows for easy deployment of images using a highly flexible API. Using kubernetes you can [deploy spark jobs](https://github.com/apache-spark-on-k8s/spark), launch end-to-end applications, or create multi-framework ETL pipelines using yaml, json, python, golang, or java bindings. The kubernetes API's programatic launching of containers seemed a perfect marriage with Airflow's "code as configuration" philosophy.
