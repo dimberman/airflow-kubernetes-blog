@@ -12,6 +12,8 @@ To address this issue, we've utilized kubernetes to allow users to launch arbitr
 
 Apache Airflow is one realization of the DevOps philosophy of "Code As Configuration." Airflow allows users to launch multi-step pipelines using a simple python object DAG (Directed Acyclic Graph). You can define dependencies, programatically construct complex workflows, and monitor scheduled jobs in an easy to read UI.
  
+  <img src="airflow_dags.png">
+
  <img src="airflow.png">
  
  Airflow comes with built-in operators for frameworks like Apache Spark, BigQuery, Hive, and EMR. It also offers a Plugins entrypoint that allows DevOps engineers to develop their own connectors.
