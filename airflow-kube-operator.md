@@ -2,11 +2,11 @@
 
 ## Introduction
 
-Today, we are excited to announce the Kubernetes Operator; a new mechanism for launching containers using the Kubernetes cloud deployment framework. 
+Today, we are excited to announce the Kubernetes Airflow Operator; a new mechanism for launching containers using the Kubernetes cloud deployment framework. 
 
-Since its inception, Airflow's greatest strength has been its flexibility. Airflow offers a wide range of native operators for services ranging from Spark and HBase, to GCP and s3. Airflow also offers easy extensibility through its plugin framework. However, one limitation of the project is that Airflow users are confined to the frameworks and clients that exist on the Airflow worker at the moment of execution. If a user wishes to use a different version of scipy or test a new deep learning framework, they would need to either launch a new airflow cluster or risk conflicting with the dependencies of other users' workflows. 
+Since its inception, Airflow's greatest strength has been its flexibility. Airflow offers a wide range of native operators for services ranging from Spark and HBase, to Google Cloud Platform (GCP) and Amazon Web Services (AWS) S3. Airflow also offers easy extensibility through its plug-in framework. However, one limitation of the project is that Airflow users are confined to the frameworks and clients that exist on the Airflow worker at the moment of execution. If a user wishes to use a different version of SciPy or test a new deep learning framework, they would need to either launch a new Airflow cluster or risk conflicting with the dependencies of other users' workflows. 
 
-To address this issue, we've utilized kubernetes to allow users to launch arbitrary docker containers and configurations. Airflow users can now have full power over their run-time environments, resources, and secrets, basically turning airflow into an "any job you want" scheduler.
+To address this issue, we've utilized Kubernetes to allow users to launch arbitrary Docker containers and configurations. Airflow users can now have full power over their run-time environments, resources, and secrets, basically turning Airflow into an "any job you want" scheduler.
 
 ## What Is Airflow?
 
@@ -20,29 +20,29 @@ Apache Airflow is one realization of the DevOps philosophy of "Code As Configura
  
 ## What is Kubernetes?
 
-Before we go any further, let's take a moment for a quick overview of Kubernetes. [Kubernetes](https://kubernetes.io/) is an open-source container deployment engine released by Google. Based on Google's [Borg](http://blog.kubernetes.io/2015/04/borg-predecessor-to-kubernetes.html), kubernetes allows for easy deployment of images using a highly flexible API. Using kubernetes you can [deploy spark jobs](https://github.com/apache-spark-on-k8s/spark), launch end-to-end applications, or create multi-framework ETL pipelines using yaml, json, python, golang, or java bindings. The kubernetes API's programatic launching of containers seemed a perfect marriage with Airflow's "code as configuration" philosophy.
+Before we go any further, let's take a moment for a quick overview of Kubernetes. [Kubernetes](https://kubernetes.io/) is an open source container deployment engine released by Google. Based on Google's [Borg](http://blog.kubernetes.io/2015/04/borg-predecessor-to-kubernetes.html), Kubernetes allows for easy deployment of images using a highly flexible API. Using Kubernetes, you can [deploy Spark jobs](https://github.com/apache-spark-on-k8s/spark), launch end-to-end applications, or create multi-framework ETL pipelines using YAML, JSON, Python, Golang, or Java bindings. The Kubernetes API's programatic launching of containers seemed a perfect marriage with Airflow's "code as configuration" philosophy.
 
 ## The Kubernetes Operator
 
-As DevOps pioneers, Airflow users are always looking for ways to make deployments and ETL pipelines simpler to manage. Any opportunity to decouple our pipeline steps while increasing monitoring can reduce future outages and fire-fights. The following is a list of benefits the Kubernetes Operator has in reducing the Airflow Engineer's footprint
+As DevOps pioneers, Airflow users are always looking for ways to make deployments and ETL pipelines simpler to manage. Any opportunity to decouple our pipeline steps, while increasing monitoring, can reduce future outages and fire-fights. The following is a list of benefits the Kubernetes Airflow Operator has in reducing an engineer's footprint
 * **Increased flexibility for deployments:**  
-Airflow's plugin API has always offered a significant boon to engineers wishing to test new functionalities within their DAGS. On the downside, whenever a developer wanted to create a new operator, they had to develop an entirely new plugin. Now, any task that can be run within a Docker container is accessible through the exact same operator, with no extra Airflow code to maintain.
+Airflow's plug-in API has always offered a significant boon to engineers wishing to test new functionalities within their DAGS. On the downside, whenever a developer wanted to create a new operator, they had to develop an entirely new plug-in. Now, any task that can be run within a Docker container is accessible through the exact same operator, without any extra Airflow code to maintain.
 * **Flexibility of configurations and dependencies:** 
-For operators that are run within static Airflow workers, dependency management can become quite difficult. If I want to run one task that requires [SciPy](https://www.scipy.org) and another that requires [NumPy](http://www.numpy.org), the developer would have to either maintain both dependencies within an Airflow worker or somehow configure ??
+For operators that are run within static Airflow workers, dependency management can become quite difficult. If I wanteed to run one task that requires [SciPy](https://www.scipy.org) and another that requires [NumPy](http://www.numpy.org), the developer would have to either maintain both dependencies within an Airflow worker or somehow configure SOMETHING MISSING HERE??
 * **Usage of kubernetes secrets for added security:** 
-Handling sensitive data is a core responsibility of any devops engineer. At every opportunity, airflow users want to minimize any API keys, database passwords, and login credentials to a strict need-to-know basis. With the kubernetes operator, users can utilize the kubernetes Vault technology to store all sensitive data. This means that the airflow workers will never have access to this information, and can simply request that pods be built with only the secrets they need
+Handling sensitive data is a core responsibility of any DevOps engineer. At every opportunity, Airflow users want to keep any API keys, database passwords, and login credentials on a strict need-to-know basis. With the Kubernetes operator, users can utilize Kubernetes Vault technology to store all sensitive data. This means that the Airflow workers will never have access to this information, and can simply request that pods be built with only the secrets they need.
 
 # Architecture
 
 <img src="architecture.png">
 
-The Kubernetes Operator uses the [Kubernetes Python Client](https://github.com/kubernetes-client/python) to generate a request that is processed by the APIServer (1). Kubernetes will then launch your pod with whatever specs you've defined (2). Images will be loaded with all the necessary environment variables, secrets and dependencies, enacting a single command. Once the job is launched, the operator only needs to monitor the health of track logs (3). Users will have the choice of gathering logs locally to the scheduler or to any distributed logging service currently in their Kubernetes cluster
+The Kubernetes Operator uses the [Kubernetes Python Client](https://github.com/kubernetes-client/python) to generate a request that is processed by the APIServer (1). Kubernetes will then launch your pod with whatever specs you've defined (2). Images will be loaded with all the necessary environment variables, secrets and dependencies, enacting a single command. Once the job is launched, the operator only needs to monitor the health of track logs (3). Users will have the choice of gathering logs locally to the scheduler or to any distributed logging service currently in their Kubernetes cluster.
 
 # Using the Kubernetes Operator
 
 ## A Basic Example
 
-The following DAG is probably the simplest example we could write to show how the kubernetes operator works. This DAG  creates two pods on Kubernetes: a linux distro with python and a base ubuntu without. The Python pod will run the Python request correctly, while the one without Python will report a failure to the user. If the operator is working correctly, the `passing-task` pod should complete while the `failing-task` pod returns a failure to the airflow webserver.
+The following DAG is probably the simplest example we could write to show how the Kubernetes Operator works. This DAG creates two pods on Kubernetes: a Linux distro with Python and a base Ubuntu distro without it. The Python pod will run the Python request correctly, while the one without Python will report a failure to the user. If the Operator is working correctly, the `passing-task` pod should complete, while the `failing-task` pod returns a failure to the Airflow web server.
 
 
 ```python
@@ -100,18 +100,19 @@ failing.set_upstream(start)
 
 ## But how does this relate to my workflow?
 
-While this example only uses basic images, the magic of docker is that this same DAG will work for any image/commandpairing you want. The following is a recommended CI/CD pipeline to run production-ready code on an airflow DAG.
+While this example only uses basic images, the magic of Docker is that this same DAG will work for any image/command pairing you want. The following is a recommended CI/CD pipeline to run production-ready code on an Airflow DAG.
 
-### 1: PR in github
-Use travis or jenkins to run unit and integration tests, bribe your favorite team-mate into PRing your code, and merge to the master branch to trigger an automated CI build
+### 1: PR in GitHub
 
-### 2: CI/CD via jenkins -> Docker Image
+Use Travis or Jenkins to run unit and integration tests, bribe your favorite teammate into PRing your code, and merge to the master branch to trigger an automated CI build.
 
-There are a multitude on articles on [generating docker files within a Jenkins build](https://getintodevops.com/blog/building-your-first-docker-image-with-jenkins-2-guide-for-developers). It's a good rule of thumb that you should never use a user-generated docker image in a production build. By reserving release tags to the jenkins user, you can ensure that malicious or untested code will never be run by your production airflow instances.
+### 2: CI/CD via Jenkins -> Docker Image
+
+There are a multitude on articles on [generating Docker files within a Jenkins build](https://getintodevops.com/blog/building-your-first-docker-image-with-jenkins-2-guide-for-developers). It's a good rule of thumb that you should never use a user-generated Docker image in a production build. By reserving release tags to the Jenkins user, you can ensure that malicious or untested code will never be run by your production Airflow instances.
 
 ### 3: Airflow launches task 
 
-Finally: Update your DAGs to reflect the new release version and you should be ready to go!
+Finally, update your DAGs to reflect the new release version and you should be ready to go!
 
 ```python
 production_task = KubernetesPodOperator(namespace='default',
@@ -129,4 +130,4 @@ production_task = KubernetesPodOperator(namespace='default',
                           
 # Closing Statements
 
-The Kubernetes Operator is by no means the end of Airflows' partnership with the Kubernetes community. There is active development on a [native Kubernetes executor](https://github.com/apache/incubator-airflow/pull/2414) that will offer dynamic allocation and customization at the airflow level. We have some exciting projects in the works, and we look forward to seeing what awesome use-cases you are able to create!
+The Kubernetes Operator is by no means the end of Airflow's partnership with the Kubernetes community. There is active development on a [native Kubernetes executor](https://github.com/apache/incubator-airflow/pull/2414) that will offer dynamic allocation and customization at the Airflow level. We have some exciting projects in the works, and we look forward to seeing what awesome use cases you are able to create!
