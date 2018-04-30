@@ -128,6 +128,6 @@ production_task = KubernetesPodOperator(namespace='default',
 ```
                           
                           
-# Closing Statements
+# So when will I be able to use this?
 
-The Kubernetes Operator is by no means the end of Airflow's partnership with the Kubernetes community. There is active development on a [native Kubernetes executor](https://github.com/apache/incubator-airflow/pull/2414) that will offer dynamic allocation and customization at the Airflow level. We have some exciting projects in the works, and we look forward to seeing what awesome use cases you are able to create!
+The Kubernetes Operator and Kubernetes Executor (article to come) have both been merged into the 1.10 release branch of Airflow (the executor in experimental mode). While this branch is still in the early stages, we hope to see it released for wide release in the next few months.
