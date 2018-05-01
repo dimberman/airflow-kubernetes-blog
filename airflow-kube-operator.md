@@ -20,17 +20,20 @@ Apache Airflow is one realization of the DevOps philosophy of "Code As Configura
  
 ## What is Kubernetes?
 
-Before we go any further, let's take a moment for a quick overview of Kubernetes. [Kubernetes](https://kubernetes.io/) is an open source container deployment engine released by Google. Based on Google's [Borg](http://blog.kubernetes.io/2015/04/borg-predecessor-to-kubernetes.html), Kubernetes allows for easy deployment of images using a highly flexible API. Using Kubernetes, you can [deploy Spark jobs](https://github.com/apache-spark-on-k8s/spark), launch end-to-end applications, or create multi-framework ETL pipelines using YAML, JSON, Python, Golang, or Java bindings. The Kubernetes API's programatic launching of containers seemed a perfect marriage with Airflow's "code as configuration" philosophy.
+Before we go any further, let's take a moment for a quick overview of Kubernetes. [Kubernetes](https://kubernetes.io/) is an open-source container deployment engine released by Google and open sourced under the Apache 2.0 licence. Based on Google's [Borg](http://blog.kubernetes.io/2015/04/borg-predecessor-to-kubernetes.html), Kubernetes allows for easy deployment of images using a highly flexible API. Using Kubernetes, you can [deploy Spark jobs](https://github.com/apache-spark-on-k8s/spark), launch end-to-end applications, or create multi-framework ETL pipelines using YAML, JSON, Python, Golang, or Java bindings. The Kubernetes API's programatic launching of containers seemed a perfect marriage with Airflow's "code as configuration" philosophy.
+
 
 ## The Kubernetes Operator
 
 As DevOps pioneers, Airflow users are always looking for ways to make deployments and ETL pipelines simpler to manage. Any opportunity to decouple our pipeline steps, while increasing monitoring, can reduce future outages and fire-fights. The following is a list of benefits the Kubernetes Airflow Operator has in reducing an engineer's footprint
 * **Increased flexibility for deployments:**  
-Airflow's plug-in API has always offered a significant boon to engineers wishing to test new functionalities within their DAGS. On the downside, whenever a developer wanted to create a new operator, they had to develop an entirely new plug-in. Now, any task that can be run within a Docker container is accessible through the exact same operator, without any extra Airflow code to maintain.
+Airflow's plugin API has always offered a significant boon to engineers wishing to test new functionalities within their DAGs. On the downside, whenever a developer wanted to create a new operator, they had to develop an entirely new plugin. Now, any task that can be run within a Docker container is accessible through the exact same operator, with no extra Airflow code to maintain.
+
 * **Flexibility of configurations and dependencies:** 
 For operators that are run within static Airflow workers, dependency management can become quite difficult. If I wanteed to run one task that requires [SciPy](https://www.scipy.org) and another that requires [NumPy](http://www.numpy.org), the developer would have to either maintain both dependencies within an Airflow worker or somehow configure SOMETHING MISSING HERE??
 * **Usage of kubernetes secrets for added security:** 
-Handling sensitive data is a core responsibility of any DevOps engineer. At every opportunity, Airflow users want to keep any API keys, database passwords, and login credentials on a strict need-to-know basis. With the Kubernetes operator, users can utilize Kubernetes Vault technology to store all sensitive data. This means that the Airflow workers will never have access to this information, and can simply request that pods be built with only the secrets they need.
+Handling sensitive data is a core responsibility of any DevOps engineer. At every opportunity, Airflow users want to isolate any API keys, database passwords, and login credentials on a strict need-to-know basis. With the Kubernetes operator, users can utilize the Kubernetes Vault technology to store all sensitive data. This means that the Airflow workers will never have access to this information, and can simply request that pods be built with only the secrets they need.
+
 
 # Architecture
 
@@ -42,7 +45,8 @@ The Kubernetes Operator uses the [Kubernetes Python Client](https://github.com/k
 
 ## A Basic Example
 
-The following DAG is probably the simplest example we could write to show how the Kubernetes Operator works. This DAG creates two pods on Kubernetes: a Linux distro with Python and a base Ubuntu distro without it. The Python pod will run the Python request correctly, while the one without Python will report a failure to the user. If the Operator is working correctly, the `passing-task` pod should complete, while the `failing-task` pod returns a failure to the Airflow web server.
+The following DAG is probably the simplest example we could write to show how the Kubernetes Operator works. This DAG creates two pods on Kubernetes: a Linux distro with Python and a base Ubuntu distro without it. The Python pod will run the Python request correctly, while the one without Python will report a failure to the user. If the Operator is working correctly, the `passing-task` pod should complete, while the `failing-task` pod returns a failure to the Airflow webserver.
+
 
 
 ```python
@@ -95,16 +99,14 @@ passing.set_upstream(start)
 failing.set_upstream(start)
 ```
 
-
 <img src="image.png">
 
 ## But how does this relate to my workflow?
 
 While this example only uses basic images, the magic of Docker is that this same DAG will work for any image/command pairing you want. The following is a recommended CI/CD pipeline to run production-ready code on an Airflow DAG.
 
-### 1: PR in GitHub
-
-Use Travis or Jenkins to run unit and integration tests, bribe your favorite teammate into PRing your code, and merge to the master branch to trigger an automated CI build.
+### 1: PR in github
+Use Travis or Jenkins to run unit and integration tests, bribe your favorite team-mate into PR'ing your code, and merge to the master branch to trigger an automated CI build.
 
 ### 2: CI/CD via Jenkins -> Docker Image
 
