@@ -1,4 +1,4 @@
-# The Kubernetes "Whatever-your-heart-desires" Operator
+# Airflow on Kubernetes: The "Whatever Your Heart Desires" Operator
 
 ## Introduction
 
