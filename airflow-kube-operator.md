@@ -33,7 +33,9 @@ Airflow's plugin API has always offered a significant boon to engineers wishing 
 For operators that are run within static Airflow workers, dependency management can become quite difficult. If a developer wants to run one task that requires [SciPy](https://www.scipy.org) and another that requires [NumPy](http://www.numpy.org), the developer would have to either maintain both dependencies within all Airflow workers or offload the task to an external machine (which can cause bugs if that external machine changes in an untracked manner). Custom Docker images allow users to ensure that the tasks environment, configuration, and dependencies are completely independent.  
 * **Usage of Kubernetes Secrets for added security:** 
 Handling sensitive data is a core responsibility of any DevOps engineer. At every opportunity, Airflow users want to isolate any API keys, database passwords, and login credentials on a strict need-to-know basis. With the Kubernetes operator, users can utilize the Kubernetes Vault technology to store all sensitive data. This means that the Airflow workers will never have access to this information, and can simply request that pods be built with only the secrets they need.
+# Prerequisites
 
+The Kubernetes operator can be found in the [1.10 beta release](https://dist.apache.org/repos/dist/dev/incubator/airflow/1.10.0beta1/) of Apache Airflow. For easy testing, we recommend you follow the [quick start tutorial](https://airflow.apache.org/start.html) using the LocalExecutor for easy set-up. Once Airflow is running, the Kubernetes Operator will use the local kubeconfig to send queries to the referenced Kubernetes cluster.
 
 # Architecture
 
